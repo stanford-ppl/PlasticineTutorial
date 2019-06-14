@@ -115,10 +115,45 @@ cd /sdh/tungsten
 
 After the estimator finishes, it will report the number of cycles and power for running your application.
 
-## Developing a Neural Network or a Sparse Linear Algebra Application and Estimating Its Performance
+## Developing a Neural Network Application and Estimating Its Performance
 We support the [PyTorch](https://pytorch.org/docs/stable/index.html) APIs. If you want to build an application based on deep neural networks or sparse linear algebra, please use the PyTorch library. Here are some tutorials on how to use PyTorch: [the offical PyTorch tutorials](https://pytorch.org/tutorials/).
 
-To obtain the cycle and power number for a PyTorch script, you will need to use a web-based [simulator](https://uflj73jfz.duckdns.org/). The web-based simulator is account protected.
+To obtain the cycle and power number for a customized model, you need to upload a file that inherits nn.Module and implements a function called `get_model_info`. The model analyzer will treat this file as a Python module, and load the function. The template looks as follows:
+```python
+import torch
+import torch.nn as nn
+import torchvision
+
+def get_model_info(batch_size = 1):
+    """
+    This function returns the necessary components to analyze a PyTorch model.
+
+    Inputs:
+    @batch_size:    The batch_size used to construct a dummy input
+
+    Outputs:
+    @model: the     PyTorch module, of type nn.module
+    @dummy_inputs:  An example input to be fed to the model
+    @loss_fn:       (Optional, can be None) A loss function to be applied to
+    the output of model. If this is None, a naive loss function will be added.
+    @loss_fn_args:  (Optional, can be None) Any additional arguments needed to
+    execute loss function.
+
+    The model analyzer will do:
+        outs = model(*dummy_inputs)
+        loss = loss_fn(outs, *loss_fn_args)
+    """
+    model = torchvision.models.resnet50()
+    dummy_inputs = [torch.randn(batch_size, 3, 224, 224)]
+
+    loss_fn = nn.CrossEntropyLoss()
+    target = torch.LongTensor(batch_size).random_(10)
+    loss_fn_args = (target, )
+
+    return model, dummy_inputs, loss_fn, loss_fn_args
+```
+
+After reformatting your model, you will need to upload the model to a web-based [simulator](https://uflj73jfz.duckdns.org/). The web-based simulator is account protected.
 Please use the following account name and password to sign in:
 ```bash
 Username:
@@ -186,3 +221,6 @@ Training:	30.039 W
 ```
 
 This shows that the accelerator consumes 57.393W for running inference and 30.039W for running training.
+
+## Developing a Sparse Linear Algebra Application and Estimating Its Performance
+To build a sparse linear algebra application, please use the [torch.sparse](https://pytorch.org/docs/stable/sparse.html) library. Then, you can use the same template as provided in the last section to implement your sparse linear algebra application and submit it to the web simulator. On the simulator, you can adjust the sparsity of the weights.

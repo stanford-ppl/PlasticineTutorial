@@ -132,7 +132,7 @@ def get_model_info(batch_size = 1):
     @batch_size:    The batch_size used to construct a dummy input
 
     Outputs:
-    @model: the     PyTorch module, of type nn.module
+    @model:         The PyTorch module, of type nn.module
     @dummy_inputs:  An example input to be fed to the model
     @loss_fn:       (Optional, can be None) A loss function to be applied to
     the output of model. If this is None, a naive loss function will be added.
@@ -223,4 +223,4 @@ Training:	30.039 W
 This shows that the accelerator consumes 57.393W for running inference and 30.039W for running training.
 
 ## Developing a Sparse Linear Algebra Application and Estimating Its Performance
-To build a sparse linear algebra application, please use the [torch.sparse](https://pytorch.org/docs/stable/sparse.html) library. Then, you can use the same template as provided in the last section to implement your sparse linear algebra application and submit it to the web simulator. On the simulator, you can adjust the sparsity of the weights.
+To build a sparse linear algebra application, please use the [torch.sparse](https://pytorch.org/docs/stable/sparse.html) library. Then, you can use the same template as provided in the last section to implement your sparse linear algebra application and submit it to the web simulator. On the simulator, you can adjust the sparsity of the weights. The simulator will generate results in the same format as discussed in the last section.

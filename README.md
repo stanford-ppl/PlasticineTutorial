@@ -3,6 +3,9 @@
 ## CPU Spec
 We ran our experiments on machines with 4 cores. Each core is an x86_64, Intel(R) Xeon(R) CPU E7-8890 v3 CPU. 64GB of memory should be enough for running all the experiments.
 
+## FAQs
+We document FAQs regarding simulation methods [here](FAQs.md).
+
 ## APIs
 We extend existing libraries and enable applications written in these libraries to run on our accelerator platform, Plasticine.
 

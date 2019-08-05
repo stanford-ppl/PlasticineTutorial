@@ -253,8 +253,9 @@ First, you will need to import the stubbers for numpy and scipy, and set up the 
 
 ```python
 import gzip
-from stubbed.stubbed.numpy_stubs import TArray
-from stubbed.stubbed.scipy_sparse_stubs import stub
+from stubbed.numpy_stubs import TArray
+from stubbed.scipy_sparse_stubs import stub
+from stubbed.networkx_stubs import dumpmem, dumptrace
 
 def test()
   ...
@@ -282,8 +283,9 @@ For numpy, you will need to convert the ndarray objects of your interest to TArr
 
 ```python
 import gzip
-from stubbed.stubbed.numpy_stubs import TArray
-from stubbed.stubbed.scipy_sparse_stubs import stub
+from stubbed.numpy_stubs import TArray
+from stubbed.scipy_sparse_stubs import stub
+from stubbed.networkx_stubs import dumpmem, dumptrace
 
 def test()
   ...

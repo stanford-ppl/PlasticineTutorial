@@ -15,3 +15,6 @@ g = nx.caveman_graph(1, 500)
 If you are building an neural network application, you can try to simulate the application with a smaller feature size or hidden size.
 
 Then, you can linearly scale the time required for a larger dataset based on the numbers obtained for the smaller ones. The power number should be roughly the same across different data sizes.
+
+### My Python script terminates with a `Killed` message. What should I do? 
+This is likely due to the fact that your kernel issued an OOM killer. You can either run your simulation with a more powerful machine, or you should try to clean up your system memory before doing the simulation.

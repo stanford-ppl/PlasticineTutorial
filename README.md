@@ -226,4 +226,86 @@ Training:	30.039 W
 This shows that the accelerator consumes 57.393W for running inference and 30.039W for running training.
 
 ## Developing a Sparse Linear Algebra Application and Estimating Its Performance
-To build a sparse linear algebra application, please use the [torch.sparse](https://pytorch.org/docs/stable/sparse.html) library. Then, you can use the same template as provided in the last section to implement your sparse linear algebra application and submit it to the web simulator. On the simulator, you can adjust the sparsity of the weights. The simulator will generate results in the same format as discussed in the last section.
+There are two ways to build Sparse Linear Algebra applications. One way is to build a sparse linear algebra application using the [torch.sparse](https://pytorch.org/docs/stable/sparse.html) library. Then, you can use the same template as provided in the last section to implement your sparse linear algebra application and submit it to the web simulator. On the simulator, you can adjust the sparsity of the weights. The simulator will generate results in the same format as discussed in the last section.
+
+The other way would be through numpy and scipy, and the `stubbed` library provided by us. In your Python environment, please make sure that you are using `stubbed` version >= 0.1.1. You can also upgrade the library by running:
+```bash
+pip install stubbed --upgrade
+```
+
+To use the `stubbed` library, you will need to slightly extend your application with a few more type conversions. These conversions help the stubber know where it needs to record the datapath of your application. For example, let's say that you have an application that contains both numpy and scipy operations:
+```python
+"""
+This is a pseudo Python code that shows how to extend your implementation with the stubbed library.
+"""
+def test()
+  ...
+  a = B @ C         # numpy matmul
+  d = a @ e.tocsc() # scipy sparse matmul
+  ...
+
+if __name__ == '__main__':
+  test()
+```
+
+First, you will need to import the stubbers for numpy and scipy, and set up the IOs for storing trace files in a similar fashion as in the section `Developing a Graph Application and Estimating Its Performance`:
+
+
+```python
+import gzip
+from stubbed.stubbed.numpy_stubs import TArray
+from stubbed.stubbed.scipy_sparse_stubs import stub
+
+def test()
+  ...
+  # B: numpy.ndarray
+  # C: numpy.ndarray
+  # e.tocsc() -> scipy.sparse.csc_matrix
+
+  a = B @ C # numpy matmul
+  d = a @ e.tocsc() # scipy sparse matmul
+  ...
+
+if __name__ == '__main__':
+  stub()
+
+  test()
+
+  with gzip.open(f_name + trace_postfix, "wt") as run:
+    dumptrace(run)
+  with open(f_name + mem_postfix, "w") as mem:
+    dumpmem(mem)
+
+```
+
+For numpy, you will need to convert the ndarray objects of your interest to TArray objects. The TArray objects would generate runtime traces for the Tungsten simulator. You do not need to do anything for scipy objects. After doing the type conversion, you code will now look like:
+
+```python
+import gzip
+from stubbed.stubbed.numpy_stubs import TArray
+from stubbed.stubbed.scipy_sparse_stubs import stub
+
+def test()
+  ...
+  # B: numpy.ndarray
+  # C: numpy.ndarray
+  # e.tocsc() -> scipy.sparse.csc_matrix
+  B = B.view(TArray)
+  C = C.view(TArray)
+  a = B @ C # numpy matmul
+  d = a @ e.tocsc() # scipy sparse matmul
+  ...
+
+if __name__ == '__main__':
+  stub()
+
+  test()
+
+  with gzip.open(f_name + trace_postfix, "wt") as run:
+    dumptrace(run)
+  with open(f_name + mem_postfix, "w") as mem:
+    dumpmem(mem)
+```
+You can now run your application in the normal way. Noticing that trace generation can take a long time to complete. If you find that the trace generation takes too long, you can also reduce the data size of your application.
+
+After the trace generation completes, you can use the tungsten simulator to estimation performance by following the same steps as in section `Developing a Graph Application and Estimating Its Performance`.
